@@ -9,9 +9,9 @@ class HalfDecentDriver:
 		self.stable = False
 		self.battery = None
 
-	def matches(self, adv):
-		# TODO: parse adv to detect Half Decent
-		return False
+	def matches(self, name: str) -> bool:
+		# naive name prefix match; refine with UUIDs later Half Decent
+		return bool(name.startswith(self.NAME_PREFIX))
 
 	def connect(self, dev):
 		self.device = dev
@@ -21,3 +21,12 @@ class HalfDecentDriver:
 		# TODO: parse notifications and update weight/time
 		pass
 
+
+
+	def on_connected(self, conn_handle):
+		# TODO: discover and enable notifications on weight characteristic
+		pass
+
+	def on_notify(self, conn_handle, value_handle, data: bytes):
+		# TODO: parse vendor format; return weight in grams if available
+		return None

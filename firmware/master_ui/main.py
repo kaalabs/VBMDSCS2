@@ -4,6 +4,10 @@ import time
 from machine import UART
 from firmware.common import registers
 from firmware.master_ui.shot_logic import ShotLogic
+from firmware.master_ui.ble_scales.manager import BleScaleManager
+from firmware.master_ui.ble_scales.acaia import AcaiaDriver
+from firmware.master_ui.ble_scales.bookoo import BookooDriver
+from firmware.master_ui.ble_scales.halfdecent import HalfDecentDriver
 from tools.modbus_cli import crc16  # reuse CRC for quick framing on device, or reimplement inline
 
 SLAVE_ID = 1
@@ -44,6 +48,10 @@ def fc06_write(uart, addr, value):
 
 
 def main():
+    ble = BleScaleManager()
+    ble.register_driver(AcaiaDriver)
+    ble.register_driver(BookooDriver)
+    ble.register_driver(HalfDecentDriver)
     uart = UART(UART_PORT, baudrate=UART_BAUD, tx=UART_TX, rx=UART_RX)
     shot = ShotLogic()
     t_prev = time.ticks_ms()
@@ -66,7 +74,8 @@ def main():
         dt = time.ticks_diff(now, t_prev)
         t_prev = now
 
-        # TODO: feed weight from BLE scale when available; use None for now
+        ble.poll()
+        weight = ble.primary_weight()
         weight = None
 
         # Shot logic: start/stop off pump state transitions
