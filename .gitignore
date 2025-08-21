@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.pip-wheel-metadata/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tests / type-check / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.pytype/
+.tox/
+.nox/
+
+# Logs
+logs/
+*.log
+
+# MicroPython / firmware artifacts
+*.mpy
+*.uf2
+*.bin
+*.hex
+*.elf
+*.map
+
+# Node (if used by tooling)
+node_modules/
+
+# Data / local artifacts
+*.csv
+*.tsv
+*.sqlite
+*.db
+*.db-journal
+
+# Secrets / env
+*.pem
+*.key
+*.crt
+*.der
+*.p12
+*.pfx
+.env
+.env.*
+
+# Generated docs/build caches
+site/
+public/
+.cache/
+.temp/
+
+# Backup/swap
+*~
+*.swp
+*.swo
