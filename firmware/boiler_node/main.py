@@ -25,6 +25,8 @@ class BoilerController:
         self.water_permit = Pin(config.PIN_WATER_PERMIT_IN, Pin.IN, Pin.PULL_UP)
         self.state_machine = SafetyStateMachine()
         self.reg = registers.RegisterMap()
+        # Initialize PoD status: config_ok (bit0) assumed true at boot until checks fail
+        self.reg.holding[registers.REG_POD_STATUS_BITS] = 1
         self.flags = feature_flags.default_flags.copy()
         self.uart = UART(config.UART_PORT, baudrate=config.UART_BAUD, tx=config.UART_TX_PIN, rx=config.UART_RX_PIN)
         self.mb = ModbusServer(self.uart, config.MODBUS_SLAVE_ID, self.reg)

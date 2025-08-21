@@ -17,6 +17,8 @@ class TankNode:
 		self.buzzer = Pin(config.PIN_BUZZER, Pin.OUT, value=0)
 		self.uart = UART(config.UART_PORT, baudrate=config.UART_BAUD, tx=config.UART_TX_PIN, rx=config.UART_RX_PIN)
 		self.reg = registers.RegisterMap()
+        # Initialize PoD status: config_ok (bit0) assumed true at boot until checks fail
+        self.reg.holding[registers.REG_POD_STATUS_BITS] = 1
 		self.mb = ModbusServer(self.uart, config.MODBUS_SLAVE_ID, self.reg)
 		self.low_latched = False
 

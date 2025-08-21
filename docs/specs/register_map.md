@@ -98,3 +98,11 @@ Commands and configuration (RW unless noted)
 Guardrails and semantics
 - Permit is hardware-enforced; registers are advisory/telemetry only.
 - Latching: `low_latched` requires explicit service action (or policy-defined clear) before permit can assert again.
+
+
+Power-on Diagnostics registers (per node)
+
+| Address | Name                | Type | Units | Description |
+| ---: | --- | --- | --- | --- |
+| 0x0040 | REG_POD_STATUS_BITS  | RO   | bitset | bit0 config_ok; bit1 comms_ok; bit2 sensors_ok; bit3 outputs_safe; bit4 permit_seen (where applicable) |
+| 0x0041 | REG_LAST_RESET_CAUSE | RO   | –     | Encoded last reset cause |
