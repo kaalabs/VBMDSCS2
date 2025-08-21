@@ -69,3 +69,8 @@ See also: `docs/specs/harness_plan.md` for the fail-safe water permit loop.
 
 ## Dependencies & Roadmap
 See `docs/specs/dependencies_roadmap.md` for feature dependencies and implementation order.
+
+
+## OTA
+- Firmware: ESP-IDF Secure Boot v2 (RSA‑3072) + Flash Encryption.
+- App layer: signed bundles with Ed25519 (see `docs/specs/ota_manifest.md` and `docs/specs/keys_and_security.md`).

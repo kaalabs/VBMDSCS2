@@ -1,0 +1,36 @@
+# ESP-IDF Secure Boot v2 + Flash Encryption defaults (template)
+# NOTE: Exact symbols differ between IDF v4.x and v5.x. Adjust to your IDF version.
+
+# --- Secure Boot v2 (RSA-3072) ---
+CONFIG_SECURE_BOOT_V2_ENABLED=y
+CONFIG_SECURE_BOOT_SIGNING_KEY="keys/secure_boot_signing_key.pem"   # path in build host, not checked-in
+CONFIG_SECURE_BOOT_RSA_SCHEME=y
+CONFIG_SECURE_BOOT_ALLOW_SHORT_APP_PARTITION=y
+CONFIG_SECURE_BOOT_BUILD_SIGNED_BINARIES=y
+# Prevent unsecured UART bootloader in production
+CONFIG_SECURE_BOOT_ALLOW_JTAG=n
+
+# --- Flash Encryption ---
+# IDF v5.x
+CONFIG_SECURE_FLASH_ENC_ENABLED=y
+CONFIG_SECURE_FLASH_ENC_MODE_DEVELOPMENT=y   # switch to RELEASE for production after validation
+# IDF v4.4.x (legacy)
+# CONFIG_FLASH_ENCRYPTION_ENABLED=y
+# CONFIG_FLASH_ENCRYPTION_MODE_DEVELOPMENT=y
+
+# --- Bootloader options ---
+CONFIG_BOOTLOADER_LOG_LEVEL_INFO=y
+CONFIG_BOOTLOADER_SKIP_VALIDATE_IN_DEEP_SLEEP=y
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# --- Partition Table ---
+# Use provided CSVs in hardware/partitions/
+# CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="hardware/partitions/esp32_4mb.csv"
+# CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="hardware/partitions/esp32s3_8mb.csv"
+CONFIG_PARTITION_TABLE_CUSTOM=y
+
+# --- Misc hardening ---
+CONFIG_ESP_TASK_WDT_EN=y
+CONFIG_ESP_SYSTEM_PANIC_PRINT_HALT=y
+CONFIG_ESP_ROM_CHECK_FLASH_ENCRYPTION_FORCE_ENABLED=y
+

@@ -4,6 +4,7 @@ import time
 from machine import UART
 from firmware.common import registers
 from firmware.master_ui.shot_logic import ShotLogic
+from firmware.master_ui.ota.boot_handler import commit_or_rollback
 from firmware.master_ui.ble_scales.manager import BleScaleManager
 from firmware.master_ui.ble_scales.acaia import AcaiaDriver
 from firmware.master_ui.ble_scales.bookoo import BookooDriver
@@ -11,6 +12,7 @@ from firmware.master_ui.ble_scales.halfdecent import HalfDecentDriver
 from tools.modbus_cli import crc16  # reuse CRC for quick framing on device, or reimplement inline
 
 SLAVE_ID = 1
+TANK_ID = 2
 UART_PORT = 1
 UART_BAUD = 115200
 UART_TX = 17
@@ -18,8 +20,10 @@ UART_RX = 16
 
 # Minimal FC03/FC06 inline to avoid full CLI overhead
 
-def fc03_read(uart, addr, count):
-    payload = bytes([SLAVE_ID, 3, (addr>>8)&0xFF, addr&0xFF, (count>>8)&0xFF, count&0xFF])
+def fc03_read(uart, addr, count, slave=None):
+    sid = SLAVE_ID if slave is None else slave
+    payload = bytes([sid, 3, (addr>>8)&0xFF, addr&0xFF, (count>>8)&0xFF, count&0xFF])
+    payload = payload
     c = crc16(payload)
     uart.write(payload + bytes([c & 0xFF, (c>>8)&0xFF]))
     t0 = time.ticks_ms()
@@ -53,6 +57,25 @@ def main():
     ble.register_driver(BookooDriver)
     ble.register_driver(HalfDecentDriver)
     uart = UART(UART_PORT, baudrate=UART_BAUD, tx=UART_TX, rx=UART_RX)
+    def health_ok():
+        # Read PoD status from boiler and tank; consider OK if both respond
+        try:
+            pod_boiler = fc03_read(uart, registers.REG_POD_STATUS_BITS, 1)
+            pod_tank = fc03_read(uart, registers.REG_POD_STATUS_BITS, 1, slave=TANK_ID)
+        except Exception:
+            return False
+        if not (pod_boiler and pod_tank):
+            return False
+        b = pod_boiler[0]
+        t = pod_tank[0]
+        # bits: 0 cfg, 1 comms, 2 sensors, 3 outputs_safe, 4 permit_seen
+        def ok(bits):
+            return (bits & (1<<1)) and (bits & (1<<2)) and (bits & (1<<3))
+        return ok(b) and ok(t)
+
+    # Commit or rollback based on health within grace period
+    commit_or_rollback(health_ok)
+
     shot = ShotLogic()
     t_prev = time.ticks_ms()
     # set TTL to a sane value
