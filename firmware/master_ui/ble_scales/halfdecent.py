@@ -1,5 +1,6 @@
 # Half Decent BLE scale driver skeleton (placeholder)
 class HalfDecentDriver:
+	NAME_PATTERNS = ['Half Decent', 'HD', 'HALF DECENT']
 	NAME_PREFIX = "Half Decent"
 	def __init__(self, ble):
 		self.ble = ble
@@ -11,7 +12,7 @@ class HalfDecentDriver:
 
 	def matches(self, name: str) -> bool:
 		# naive name prefix match; refine with UUIDs later Half Decent
-		return bool(name.startswith(self.NAME_PREFIX))
+		return any(name.upper().startswith(p.upper()) for p in getattr(self, "NAME_PATTERNS", [self.NAME_PREFIX]))
 
 	def connect(self, dev):
 		self.device = dev
@@ -30,3 +31,8 @@ class HalfDecentDriver:
 	def on_notify(self, conn_handle, value_handle, data: bytes):
 		# TODO: parse vendor format; return weight in grams if available
 		return None
+
+
+	# TODO: fill after GATT probe
+	SERVICE_UUID = None
+	WEIGHT_CHAR_UUID = None

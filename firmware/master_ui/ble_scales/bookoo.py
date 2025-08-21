@@ -1,5 +1,6 @@
 # Bookoo BLE scale driver skeleton (placeholder)
 class BookooDriver:
+	NAME_PATTERNS = ['THEMIS', 'Bookoo', 'Themis']
 	NAME_PREFIX = "Bookoo"
 	def __init__(self, ble):
 		self.ble = ble
@@ -11,7 +12,7 @@ class BookooDriver:
 
 	def matches(self, name: str) -> bool:
 		# naive name prefix match; refine with UUIDs later Bookoo
-		return bool(name.startswith(self.NAME_PREFIX))
+		return any(name.upper().startswith(p.upper()) for p in getattr(self, "NAME_PATTERNS", [self.NAME_PREFIX]))
 
 	def connect(self, dev):
 		self.device = dev
@@ -30,3 +31,8 @@ class BookooDriver:
 	def on_notify(self, conn_handle, value_handle, data: bytes):
 		# TODO: parse vendor format; return weight in grams if available
 		return None
+
+
+	# TODO: fill after GATT probe
+	SERVICE_UUID = None
+	WEIGHT_CHAR_UUID = None

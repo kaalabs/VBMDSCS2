@@ -24,3 +24,21 @@ Failure/robustness
 - If BLE drops mid-shot, system falls back to time/flow-only logic; never compromises safety.
 - Scales are optional; nodes remain autonomous; BLE lives entirely on master/UI.
 
+
+
+Capture procedure (per model)
+1. Use nRF Connect (or similar) to scan and connect to the scale.
+2. Record advertised name/manufacturer data.
+3. Record all GATT services and characteristics (UUIDs), and identify the weight notify characteristic and CCCD.
+4. Note CCCD write value to enable notifications.
+5. Save logs and paste UUIDs into driver placeholders (SERVICE_UUID, WEIGHT_CHAR_UUID).
+
+Models to capture (priority)
+- Acaia Lunar
+- BOOKOO Themis mini
+- Half Decent scale
+
+Known limitations
+- CCCD index may differ (not always value_handle+1).
+- Name prefix matching is a fallback; prefer UUIDs.
+- Vendor payload formats may need parsing/byte-order fixes.
