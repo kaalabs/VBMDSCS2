@@ -33,3 +33,9 @@ Implementation notes for water level monitoring
 - UI/alerts: icon/state on master UI, local LED/buzzer patterns (distinct from other faults), MQTT state if enabled.
 - Privacy/safety: No remote start allowed when low-water is latched; remote clear requires physical presence action.
 
+
+
+Permit architecture updates
+- Introduce Tank/Water node providing fail-safe WATER_OK permit and telemetry.
+- Boiler/Brew nodes require permit AND local checks; bus advisories do not affect safety.
+- Loss of permit (or node power) immediately inhibits heater/pump; factory microswitch remains primary.

@@ -56,3 +56,45 @@ Advisories (RW)
 | ---: | --- | --- | --- | --- |
 | 0x0200 | REG_ADVISORY_BITS | RW | bitset | bit0 predictive_stop_request |
 | 0x0201 | REG_PREDICTIVE_STOP_MS | RW | ms | ETA until stop suggested by master (advisory only) |
+
+
+Tank/Water node (concept)
+- Follows the same register semantics for status/counters and heartbeat.
+- Status bits for: permit_on, tank_low_raw, low_latched.
+- Master may read percentage if ultrasonic sensor is present; still advisory only.
+
+
+## Tank/Water Node Register Map (v0.1)
+
+Device information (RO)
+
+| Address | Name           | Type | Units | Description |
+| ---: | --- | --- | --- | --- |
+| 0x0000 | REG_DEVICE_TYPE | RO   | –     | 2 = Tank/Water node |
+| 0x0001 | REG_FW_VERSION  | RO   | –     | Version encoded as (major<<8)|(minor<<4)|patch |
+
+Status and measurements (RO)
+
+| Address | Name                     | Type | Units  | Description |
+| ---: | --- | --- | --- | --- |
+| 0x0010 | REG_STATUS_BITS           | RO   | bitset | bit0 permit_on; bit1 tank_low_raw; bit2 low_latched |
+| 0x0013 | REG_TANK_PERCENT_0_1000   | RO   | 0.1 %  | Tank level; 0..1000 (requires ultrasonic) |
+
+Counters (RO)
+
+| Address | Name                 | Type | Units | Description |
+| ---: | --- | --- | --- | --- |
+| 0x0022 | REG_LOW_EVENTS        | RO   | count | Number of low-water latch events |
+| 0x0023 | REG_PERMIT_SECONDS    | RO   | s     | Cumulative seconds with permit asserted |
+
+Commands and configuration (RW unless noted)
+
+| Address | Name              | Type | Units | Description |
+| ---: | --- | --- | --- | --- |
+| 0x0100 | REG_FEATURE_FLAGS  | RW   | bitset | e.g., enable ultrasonic sensor (if present) |
+| 0x0102 | REG_COMMAND_TTL_MS | RW   | ms    | TTL for write validity; 0 disables remote writes |
+| 0x00F0 | REG_MASTER_HEARTBEAT_MS | RW | ms | Master heartbeat age (written by master periodically) |
+
+Guardrails and semantics
+- Permit is hardware-enforced; registers are advisory/telemetry only.
+- Latching: `low_latched` requires explicit service action (or policy-defined clear) before permit can assert again.

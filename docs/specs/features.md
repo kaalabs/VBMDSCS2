@@ -39,3 +39,7 @@ Dependencies matrix (abridged)
 
 UX specifics
 - Water level UX: Local LED/buzzer cues; UI tank state/percent; latched low-water alarm with manual recovery.
+
+
+Core safety feature (always-on)
+- Water permit loop: Tank node emits fail-safe WATER_OK; Boiler/Brew nodes gate outputs. Advanced features never bypass this.

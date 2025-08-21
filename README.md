@@ -27,6 +27,7 @@ Project principles (priority order)
 
 Architecture at a glance
 - Boiler/Steam local node: ESP32‑WROOM‑32E (MicroPython). Enforces all local safeties and operates standalone.
+- Tank/Water node: ESP32‑WROOM‑32E. Provides fail-safe WATER_OK permit and water telemetry; independent of master.
 - Optional Master/UI node: ESP32‑S3 (MicroPython). Orchestrates, UI/telemetry. Failure cannot compromise safety.
 - Fieldbus: Isolated RS‑485 (Modbus RTU) between nodes.
 - Actuation: Heater via zero-cross SSR; pump via AC-rated relay. Factory pressurestat and thermal safeties remain in circuit.
@@ -37,6 +38,7 @@ Repository layout
 - firmware/common/: Shared libraries (e.g., Modbus)
 - firmware/boiler_node/: Local node firmware (ESP32‑WROOM‑32E)
 - firmware/master_ui/: Master/UI firmware (ESP32‑S3)
+- firmware/tank_node/: Tank/Water node firmware (ESP32‑WROOM‑32E)
 
 Getting started
 - See docs/specs/machine_profile.md, docs/specs/label_ocr.md, and docs/safety/safety_matrix.md
@@ -60,3 +62,6 @@ See `docs/specs/integration_strategy.md` for phased, decentralized integration (
 
 ### BLE scales
 See `docs/specs/ble_scales.md`. Drivers: Acaia, Bookoo, Half Decent (skeletons under `firmware/master_ui/ble_scales/`).
+
+
+See also: `docs/specs/harness_plan.md` for the fail-safe water permit loop.
