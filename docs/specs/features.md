@@ -43,3 +43,6 @@ UX specifics
 
 Core safety feature (always-on)
 - Water permit loop: Tank node emits fail-safe WATER_OK; Boiler/Brew nodes gate outputs. Advanced features never bypass this.
+
+
+See also: `docs/specs/dependencies_roadmap.md` for dependencies and phased implementation.

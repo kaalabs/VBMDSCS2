@@ -65,3 +65,7 @@ See `docs/specs/ble_scales.md`. Drivers: Acaia, Bookoo, Half Decent (skeletons u
 
 
 See also: `docs/specs/harness_plan.md` for the fail-safe water permit loop.
+
+
+## Dependencies & Roadmap
+See `docs/specs/dependencies_roadmap.md` for feature dependencies and implementation order.
