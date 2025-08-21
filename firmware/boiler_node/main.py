@@ -17,6 +17,8 @@ except ImportError:
     import feature_flags, registers
 
 class BoilerController:
+	# PoD flags
+	POD_CFG=1<<0; POD_COMMS=1<<1; POD_SENS=1<<2; POD_SAFE=1<<3; POD_PERMIT=1<<4
     def __init__(self):
         self.wdt = WDT(timeout=config.WATCHDOG_TIMEOUT_MS)
         self.heater = Pin(config.PIN_HEATER_SSR, Pin.OUT, value=0)
@@ -26,12 +28,22 @@ class BoilerController:
         self.state_machine = SafetyStateMachine()
         self.reg = registers.RegisterMap()
         # Initialize PoD status: config_ok (bit0) assumed true at boot until checks fail
-        self.reg.holding[registers.REG_POD_STATUS_BITS] = 1
+        self.pod_bits = self.POD_CFG
+		self.reg.holding[registers.REG_POD_STATUS_BITS] = self.pod_bits
         self.flags = feature_flags.default_flags.copy()
         self.uart = UART(config.UART_PORT, baudrate=config.UART_BAUD, tx=config.UART_TX_PIN, rx=config.UART_RX_PIN)
         self.mb = ModbusServer(self.uart, config.MODBUS_SLAVE_ID, self.reg)
 
-    async def watchdog_task(self):
+    
+	def update_pod_bits(self):
+		bits = 0
+		bits |= self.POD_CFG
+		if self.comms_ok: bits |= self.POD_COMMS
+		if self.sensors_ok: bits |= self.POD_SENS
+		if self.outputs_safe: bits |= self.POD_SAFE
+		if self.permit_seen: bits |= self.POD_PERMIT
+		self.reg.holding[registers.REG_POD_STATUS_BITS] = bits
+async def watchdog_task(self):
         while True:
             self.wdt.feed()
             await asyncio.sleep(1)
@@ -71,6 +83,7 @@ class BoilerController:
     
     async def modbus_task(self):
         while True:
+            self.comms_ok = True
             self.mb.poll()
             await asyncio.sleep_ms(5)
 
@@ -82,6 +95,12 @@ class BoilerController:
             if ttl <= 0 or hb > config.HEARTBEAT_TIMEOUT_MS:
                 # Disable remote command bits if TTL disabled or heartbeat stale
                 self.reg.holding[registers.REG_COMMAND_BITS] = 0
+                        try:
+                _ = self.tank_low.value()
+                self.sensors_ok = True
+            except Exception:
+                self.sensors_ok = False
+            self.update_pod_bits()
             await asyncio.sleep_ms(200)
     async def main_loop(self):
         asyncio.create_task(self.watchdog_task())
